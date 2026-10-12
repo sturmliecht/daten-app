@@ -5,6 +5,16 @@ from datetime import datetime, date
 
 from app import datenbank
 
+
+def alter_berechnen(geburtsdatum):
+    heute = date.today()
+    alter = heute.year - geburtsdatum.year
+    # Falls der Geburtstag dieses Jahr noch nicht war, ein Jahr abziehen
+    if (heute.month, heute.day) < (geburtsdatum.month, geburtsdatum.day):
+        alter -= 1
+    return alter
+
+
 class DatenApp:
     def __init__(self, fenster):
         self.fenster = fenster
@@ -58,8 +68,54 @@ class DatenApp:
         self.knopf_speichern.grid(row=5, column=1, sticky="w", pady=(10, 0))
 
     def anzeige_bauen(self):
-        # Platzhalter, wird in Aufgabe 5 durch die Tabelle ersetzt
-        ttk.Label(self.reiter_anzeige, text="Hier erscheinen später die Einträge.").pack()
+        spalten = ("vorname", "nachname", "geburtsdatum", "alter", "geschlecht", "wohnort")
+        self.tabelle = ttk.Treeview(self.reiter_anzeige, columns=spalten, show="headings", height=10)
+
+        # Spaltenüberschriften
+        self.tabelle.heading("vorname", text="Vorname")
+        self.tabelle.heading("nachname", text="Nachname")
+        self.tabelle.heading("geburtsdatum", text="Geburtsdatum")
+        self.tabelle.heading("alter", text="Alter")
+        self.tabelle.heading("geschlecht", text="Geschlecht")
+        self.tabelle.heading("wohnort", text="Wohnort")
+
+        # Spaltenbreiten
+        self.tabelle.column("vorname", width=120)
+        self.tabelle.column("nachname", width=120)
+        self.tabelle.column("geburtsdatum", width=100, anchor="center")
+        self.tabelle.column("alter", width=50, anchor="center")
+        self.tabelle.column("geschlecht", width=80, anchor="center")
+        self.tabelle.column("wohnort", width=120)
+
+        # Scrollleiste für viele Einträge
+        scrollleiste = ttk.Scrollbar(self.reiter_anzeige, orient="vertical", command=self.tabelle.yview)
+        self.tabelle.configure(yscrollcommand=scrollleiste.set)
+
+        self.tabelle.grid(row=0, column=0, sticky="nsew")
+        scrollleiste.grid(row=0, column=1, sticky="ns")
+
+        # Tabelle wächst mit, wenn das Fenster grösser gezogen wird
+        self.reiter_anzeige.rowconfigure(0, weight=1)
+        self.reiter_anzeige.columnconfigure(0, weight=1)
+
+        self.anzeige_aktualisieren()
+
+    def anzeige_aktualisieren(self):
+        # Alle bisherigen Zeilen entfernen
+        for zeile in self.tabelle.get_children():
+            self.tabelle.delete(zeile)
+
+        # Einträge aus der Datenbank neu einfügen
+        for eintrag_id, nachname, vorname, geburtsdatum, geschlecht, wohnort in datenbank.eintraege_auslesen():
+            datum = date.fromisoformat(geburtsdatum)
+            self.tabelle.insert("", tk.END, iid=eintrag_id, values=(
+                vorname,
+                nachname,
+                datum.strftime("%d.%m.%Y"),
+                alter_berechnen(datum),
+                geschlecht,
+                wohnort,
+            ))
 
 
     def speichern(self):
@@ -100,6 +156,7 @@ class DatenApp:
             return
 
         datenbank.eintrag_speichern(nachname, vorname, geburtsdatum, geschlecht, wohnort)
+        self.anzeige_aktualisieren()
         messagebox.showinfo("Gespeichert", f"{vorname} {nachname} wurde gespeichert.")
         self.felder_leeren()
 
