@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
+from datetime import datetime, date
 
 from app import datenbank
 
@@ -24,15 +25,15 @@ class DatenApp:
     def eingabe_bauen(self):
         formular = self.reiter_eingabe
 
-        # Nachname
-        ttk.Label(formular, text="Nachname:").grid(row=0, column=0, sticky="w", pady=2)
-        self.eingabe_nachname = ttk.Entry(formular, width=30)
-        self.eingabe_nachname.grid(row=0, column=1, sticky="w", pady=2)
-
         # Vorname
-        ttk.Label(formular, text="Vorname:").grid(row=1, column=0, sticky="w", pady=2)
+        ttk.Label(formular, text="Vorname:").grid(row=0, column=0, sticky="w", pady=2)
         self.eingabe_vorname = ttk.Entry(formular, width=30)
-        self.eingabe_vorname.grid(row=1, column=1, sticky="w", pady=2)
+        self.eingabe_vorname.grid(row=0, column=1, sticky="w", pady=2)
+
+        # Nachname
+        ttk.Label(formular, text="Nachname:").grid(row=1, column=0, sticky="w", pady=2)
+        self.eingabe_nachname = ttk.Entry(formular, width=30)
+        self.eingabe_nachname.grid(row=1, column=1, sticky="w", pady=2)
 
         # Geburtsdatum
         ttk.Label(formular, text="Geburtsdatum (TT.MM.JJJJ):").grid(row=2, column=0, sticky="w", pady=2)
@@ -68,8 +69,35 @@ class DatenApp:
         geschlecht = self.geschlecht.get()
         wohnort = self.eingabe_wohnort.get().strip()
 
-        # Datum von TT.MM.JJJJ in JJJJ-MM-TT umwandeln
-        geburtsdatum = datetime.strptime(geburtsdatum_text, "%d.%m.%Y").strftime("%Y-%m-%d")
+        # Alle Fehler sammeln, damit man sie auf einmal sieht
+        fehler = []
+
+        if not nachname:
+            fehler.append("Nachname fehlt.")
+        if not vorname:
+            fehler.append("Vorname fehlt.")
+        if not wohnort:
+            fehler.append("Wohnort fehlt.")
+        if not geschlecht:
+            fehler.append("Bitte ein Geschlecht auswählen.")
+
+        geburtsdatum = None
+        if not geburtsdatum_text:
+            fehler.append("Geburtsdatum fehlt.")
+        else:
+            try:
+                datum = datetime.strptime(geburtsdatum_text, "%d.%m.%Y").date()
+                if datum > date.today():
+                    fehler.append("Geburtsdatum darf nicht in der Zukunft liegen.")
+                else:
+                    geburtsdatum = datum.strftime("%Y-%m-%d")
+            except ValueError:
+                fehler.append("Geburtsdatum ist ungültig. Bitte im Format TT.MM.JJJJ eingeben.")
+
+        # Bei Fehlern: Meldung anzeigen und abbrechen
+        if fehler:
+            messagebox.showerror("Eingabe prüfen", "\n".join(fehler))
+            return
 
         datenbank.eintrag_speichern(nachname, vorname, geburtsdatum, geschlecht, wohnort)
         messagebox.showinfo("Gespeichert", f"{vorname} {nachname} wurde gespeichert.")
