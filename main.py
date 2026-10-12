@@ -1,8 +1,4 @@
-
-from app import datenbank
+from app import datenbank, gui
 
 datenbank.tabelle_anlegen()
-datenbank.eintrag_speichern("Muster", "Anna", "2004-03-15", "w", "Bern")
-
-for eintrag in datenbank.eintraege_auslesen():
-    print(eintrag)
+gui.starten()

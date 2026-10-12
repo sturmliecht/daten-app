@@ -1,6 +1,8 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+from datetime import datetime
 
+from app import datenbank
 
 class DatenApp:
     def __init__(self, fenster):
@@ -51,13 +53,36 @@ class DatenApp:
         self.eingabe_wohnort.grid(row=4, column=1, sticky="w", pady=2)
 
         # Speichern-Button (Funktion folgt in der nächsten Unteraufgabe)
-        self.knopf_speichern = ttk.Button(formular, text="Speichern")
+        self.knopf_speichern = ttk.Button(formular, text="Speichern", command=self.speichern)
         self.knopf_speichern.grid(row=5, column=1, sticky="w", pady=(10, 0))
 
     def anzeige_bauen(self):
         # Platzhalter, wird in Aufgabe 5 durch die Tabelle ersetzt
         ttk.Label(self.reiter_anzeige, text="Hier erscheinen später die Einträge.").pack()
 
+
+    def speichern(self):
+        nachname = self.eingabe_nachname.get().strip()
+        vorname = self.eingabe_vorname.get().strip()
+        geburtsdatum_text = self.eingabe_geburtsdatum.get().strip()
+        geschlecht = self.geschlecht.get()
+        wohnort = self.eingabe_wohnort.get().strip()
+
+        # Datum von TT.MM.JJJJ in JJJJ-MM-TT umwandeln
+        geburtsdatum = datetime.strptime(geburtsdatum_text, "%d.%m.%Y").strftime("%Y-%m-%d")
+
+        datenbank.eintrag_speichern(nachname, vorname, geburtsdatum, geschlecht, wohnort)
+        messagebox.showinfo("Gespeichert", f"{vorname} {nachname} wurde gespeichert.")
+        self.felder_leeren()
+
+
+
+    def felder_leeren(self):
+        self.eingabe_nachname.delete(0, tk.END)
+        self.eingabe_vorname.delete(0, tk.END)
+        self.eingabe_geburtsdatum.delete(0, tk.END)
+        self.eingabe_wohnort.delete(0, tk.END)
+        self.geschlecht.set("")
 
 def starten():
     fenster = tk.Tk()
