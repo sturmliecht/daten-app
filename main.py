@@ -1,7 +1,4 @@
 
-
-
-
 from app import datenbank
 
 datenbank.tabelle_anlegen()
