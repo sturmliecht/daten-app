@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from datetime import datetime
-from datetime import datetime, date
-from app.logik import alter_berechnen
+from datetime import date
+
+from app.logik import alter_berechnen, eingaben_pruefen
 
 from app import datenbank
 
@@ -111,38 +111,14 @@ class DatenApp:
 
 
     def speichern(self):
-        nachname = self.eingabe_nachname.get().strip()
         vorname = self.eingabe_vorname.get().strip()
+        nachname = self.eingabe_nachname.get().strip()
         geburtsdatum_text = self.eingabe_geburtsdatum.get().strip()
         geschlecht = self.geschlecht.get()
         wohnort = self.eingabe_wohnort.get().strip()
 
-        # Alle Fehler sammeln, damit man sie auf einmal sieht
-        fehler = []
+        fehler, geburtsdatum = eingaben_pruefen(nachname, vorname, geburtsdatum_text, geschlecht, wohnort)
 
-        if not nachname:
-            fehler.append("Nachname fehlt.")
-        if not vorname:
-            fehler.append("Vorname fehlt.")
-        if not wohnort:
-            fehler.append("Wohnort fehlt.")
-        if not geschlecht:
-            fehler.append("Bitte ein Geschlecht auswählen.")
-
-        geburtsdatum = None
-        if not geburtsdatum_text:
-            fehler.append("Geburtsdatum fehlt.")
-        else:
-            try:
-                datum = datetime.strptime(geburtsdatum_text, "%d.%m.%Y").date()
-                if datum > date.today():
-                    fehler.append("Geburtsdatum darf nicht in der Zukunft liegen.")
-                else:
-                    geburtsdatum = datum.strftime("%Y-%m-%d")
-            except ValueError:
-                fehler.append("Geburtsdatum ist ungültig. Bitte im Format TT.MM.JJJJ eingeben.")
-
-        # Bei Fehlern: Meldung anzeigen und abbrechen
         if fehler:
             messagebox.showerror("Eingabe prüfen", "\n".join(fehler))
             return
