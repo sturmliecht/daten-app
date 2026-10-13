@@ -2,17 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 from datetime import datetime, date
+from app.logik import alter_berechnen
 
 from app import datenbank
-
-
-def alter_berechnen(geburtsdatum):
-    heute = date.today()
-    alter = heute.year - geburtsdatum.year
-    # Falls der Geburtstag dieses Jahr noch nicht war, ein Jahr abziehen
-    if (heute.month, heute.day) < (geburtsdatum.month, geburtsdatum.day):
-        alter -= 1
-    return alter
 
 
 class DatenApp:
