@@ -55,7 +55,7 @@ class DatenApp:
         self.eingabe_wohnort = ttk.Entry(formular, width=30)
         self.eingabe_wohnort.grid(row=4, column=1, sticky="w", pady=2)
 
-        # Speichern-Button (Funktion folgt in der nächsten Unteraufgabe)
+        # Speichern-Button
         self.knopf_speichern = ttk.Button(formular, text="Speichern", command=self.speichern)
         self.knopf_speichern.grid(row=5, column=1, sticky="w", pady=(10, 0))
 
