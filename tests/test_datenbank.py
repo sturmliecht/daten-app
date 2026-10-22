@@ -45,6 +45,21 @@ class TestDatenbank(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):
             datenbank.eintrag_speichern("Muster", "Anna", "2004-03-15", "x", "Bern")
 
+    def test_eintreage_sind_nach_nachname_und_vorname_sortiert(self):
+        datenbank.eintrag_speichern("Ärni", "Anna", "1995-05-10", "w", "Zürich")
+        datenbank.eintrag_speichern("von Gunten", "ben", "1985-08-15", "w", "Basel")
+        datenbank.eintrag_speichern("von Gunten", "Ben", "1990-02-20", "m", "Bern")
+        datenbank.eintrag_speichern("von Gunten", "BEn", "1985-08-15", "w", "Basel")
+        datenbank.eintrag_speichern("Meier", "Clara", "1985-08-15", "w", "Basel")
+
+        eintraege = datenbank.eintraege_auslesen()
+
+        self.assertEqual(eintraege[0][1], "Meier")
+        self.assertEqual(eintraege[1][2], "BEn")
+        self.assertEqual(eintraege[2][2], "Ben")
+        self.assertEqual(eintraege[3][2], "ben")
+        self.assertEqual(eintraege[4][1], "Ärni")
+  
 
 if __name__ == "__main__":
     unittest.main()
