@@ -61,7 +61,7 @@ class TestDatenbank(unittest.TestCase):
         self.assertEqual(eintraege[4][1], "Ärni")
 
     def test_eintraege_sind_nach_nachname_und_vorname_sortiert_fail(self):
-        datenbank.eintrag_speichern("Aerni", "Anna", "1995-05-10", "w", "Zürich")
+        datenbank.eintrag_speichern("aerni", "Anna", "1995-05-10", "w", "Zürich")
         datenbank.eintrag_speichern("von Gunten", "ben", "1985-08-15", "w", "Basel")
         datenbank.eintrag_speichern("von Gunten", "Ben", "1990-02-20", "m", "Bern")
         datenbank.eintrag_speichern("von Gunten", "BEn", "1985-08-15", "w", "Basel")
@@ -69,7 +69,7 @@ class TestDatenbank(unittest.TestCase):
 
         eintraege = datenbank.eintraege_auslesen()
         tatsaechlich = tuple([eintrag[1:3] for eintrag in eintraege])
-        erwartet = (("Aerni", "Anna"), ("Meier", "Clara"), ("von Gunten", "BEn"), ("von Gunten", "ben"), ("von Gunten", "Ben"))   # Nur Nachnname und Vorname für die Überprüfung
+        erwartet = (("aerni", "Anna"), ("Meier", "Clara"), ("von Gunten", "BEn"), ("von Gunten", "ben"), ("von Gunten", "Ben"))   # Nur Nachnname und Vorname für die Überprüfung
 
         self.assertNotEqual(tatsaechlich, erwartet)  # Test schlägt fehl, da die Sortierung nicht korrekt ist
   
