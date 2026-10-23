@@ -5,7 +5,6 @@ from pathlib import Path
 
 from app import datenbank
 
-
 class TestDatenbank(unittest.TestCase):
 
     def setUp(self):

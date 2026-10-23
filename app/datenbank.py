@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+from app.logik import namen_vergleichen
 
 DB_PATH = Path(__file__).resolve().parent.parent / "daten.db"
 
@@ -37,10 +38,11 @@ def eintrag_speichern(nachname, vorname, geburtsdatum, geschlecht, wohnort):
 
 def eintraege_auslesen():
     verbindung = sqlite3.connect(DB_PATH)
+    verbindung.create_collation("alphabetisch", namen_vergleichen )
     try:
         cursor = verbindung.execute(
             "SELECT id, nachname, vorname, geburtsdatum, geschlecht, wohnort "
-            "FROM personen ORDER BY nachname, vorname"
+            "FROM personen ORDER BY nachname COLLATE alphabetisch, vorname COLLATE alphabetisch"
         )
         return cursor.fetchall()
     finally:
