@@ -44,3 +44,6 @@ def eingaben_pruefen(nachname, vorname, geburtsdatum_text, geschlecht, wohnort, 
         fehler.append("Wohnort fehlt.")
 
     return fehler, geburtsdatum
+
+def namen_vergleichen(name1, name2):
+    return 0
