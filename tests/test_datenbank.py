@@ -45,34 +45,44 @@ class TestDatenbank(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):
             datenbank.eintrag_speichern("Muster", "Anna", "2004-03-15", "x", "Bern")
 
-    def test_eintreage_sind_nach_nachname_und_vorname_sortiert(self):
-        datenbank.eintrag_speichern("Ärni", "Anna", "1995-05-10", "w", "Zürich")
-        datenbank.eintrag_speichern("von Gunten", "ben", "1985-08-15", "w", "Basel")
-        datenbank.eintrag_speichern("von Gunten", "Ben", "1990-02-20", "m", "Bern")
-        datenbank.eintrag_speichern("von Gunten", "BEn", "1985-08-15", "w", "Basel")
-        datenbank.eintrag_speichern("Meier", "Clara", "1985-08-15", "w", "Basel")
+    def test_nachnamen_werden_nach_umlaut_regel_sortiert(self):
+        datenbank.eintrag_speichern("Meier", "Lena", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Zürcher", "Lea", "1990-01-01", "w", "Basel")
+        datenbank.eintrag_speichern("Ärni", "Tim", "1985-06-20", "m", "Thun")
+        datenbank.eintrag_speichern("von Gunten", "Max", "1985-06-20", "m", "Thun")
+        datenbank.eintrag_speichern("Azzola", "Eva", "1990-01-01", "w", "Zürich")
 
         eintraege = datenbank.eintraege_auslesen()
+        tatsaechlich = tuple([eintrag[1:3] for eintrag in eintraege])  # nur Nachname und Vorname
+        erwartet = (("Azzola", "Eva"), ("Ärni", "Tim"), ("Meier", "Lena"), ("von Gunten", "Max"), ("Zürcher", "Lea"))
 
-        self.assertEqual(eintraege[0][1], "Meier")
-        self.assertEqual(eintraege[1][2], "BEn")
-        self.assertEqual(eintraege[2][2], "Ben")
-        self.assertEqual(eintraege[3][2], "ben")
-        self.assertEqual(eintraege[4][1], "Ärni")
+        self.assertEqual(tatsaechlich, erwartet)
 
-    def test_eintraege_sind_nach_nachname_und_vorname_sortiert_fail(self):
-        datenbank.eintrag_speichern("aerni", "Anna", "1995-05-10", "w", "Zürich")
-        datenbank.eintrag_speichern("von Gunten", "ben", "1985-08-15", "w", "Basel")
-        datenbank.eintrag_speichern("von Gunten", "Ben", "1990-02-20", "m", "Bern")
-        datenbank.eintrag_speichern("von Gunten", "BEn", "1985-08-15", "w", "Basel")
-        datenbank.eintrag_speichern("Meier", "Clara", "1985-08-15", "w", "Basel")
+    def test_vornamen_ohne_akzent_und_grossgeschrieben_zuerst(self):
+        datenbank.eintrag_speichern("Müller", "hélène", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Müller", "Noël", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Müller", "ben", "1990-01-01", "m", "Zürich")
+        datenbank.eintrag_speichern("Müller", "Helene", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Müller", "BEn", "1990-01-01", "m", "Zürich")
+        datenbank.eintrag_speichern("Müller", "Hélène", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Müller", "Noel", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Müller", "helene", "1990-01-01", "w", "Zürich")
+        datenbank.eintrag_speichern("Müller", "Ben", "1990-01-01", "m", "Zürich")
 
         eintraege = datenbank.eintraege_auslesen()
-        tatsaechlich = tuple([eintrag[1:3] for eintrag in eintraege])
-        erwartet = (("aerni", "Anna"), ("Meier", "Clara"), ("von Gunten", "BEn"), ("von Gunten", "Ben"), ("von Gunten", "ben"))   # Nur Nachnname und Vorname für die Überprüfung
+        tatsaechlich = tuple([eintrag[1:3] for eintrag in eintraege])  # nur Nachname und Vorname
+        erwartet = (
+            ("Müller", "BEn"), 
+            ("Müller", "Ben"), 
+            ("Müller", "ben"), 
+            ("Müller", "Helene"), 
+            ("Müller", "helene"), 
+            ("Müller", "Hélène"), 
+            ("Müller", "hélène"), 
+            ("Müller", "Noel"), 
+            ("Müller", "Noël"))
 
-        self.assertEqual(tatsaechlich, erwartet)  # Test schlägt fehl, da die Sortierung nicht korrekt ist
-  
+        self.assertEqual(tatsaechlich, erwartet)
 
 if __name__ == "__main__":
     unittest.main()
