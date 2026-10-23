@@ -88,5 +88,11 @@ class TestNamenVergleichen(unittest.TestCase):
     def test_gleiche_namen_ergeben_0(self):
         self.assertEqual(namen_vergleichen("Müller", "Müller"), 0)
 
+    def test_akzent_wird_wie_grundbuchtstabe_sortiert(self):
+        self.assertEqual(namen_vergleichen("Hélène", "Helga"), -1)
+
+    def test_cedille_wird_wie_c_sortiert(self):
+        self.assertEqual(namen_vergleichen("François", "Franz"), -1)
+
 if __name__ == "__main__":
     unittest.main()
