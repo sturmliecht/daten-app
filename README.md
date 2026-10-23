@@ -10,6 +10,7 @@ Entstanden als Wochenprojekt im Rahmen von Modul 03 in der KW 42.
 - Die Prüfung der Eingaben mit verständlichen Fehlermeldungen
 - Das Speichern der Daten in einer SQLite-Datenbank
 - Das Anzeigen aller Einträge in einer Tabelle, inklusive automatischer Berechnung des Alters mit dem Geburtsdatum als Grundlage
+- Die Sortierung der Einträge nach Nachname und Vorname, auch bei Umlauten und Akzenten
 - Getrennte Bereiche für Eingabe und Anzeige über zwei Reiter im selben Fenster
 
 ## Installation und Start
@@ -37,7 +38,12 @@ Alle Felder ausfüllen, das Geburtsdatum im Format `TT.MM.JJJJ`, und auf „Spei
 
 **Reiter „Anzeige“**
 
-Zeigt alle gespeicherten Personen, sortiert nach Nachname.
+Zeigt alle gespeicherten Personen, sortiert nach Nachname und bei gleichem Nachnamen nach Vorname. Dabei gilt:
+
+- Gross- und Kleinschreibung spielt keine Rolle, „von Acker“ steht also unter V.
+- Ä, Ö und Ü stehen direkt nach A, O und U, zum Beispiel Albert, Äberli, Bolsonaro.
+- Buchstaben mit Akzent wie é, è, ç oder ô werden wie der Grundbuchstabe sortiert.
+- Sind zwei Namen bis auf Akzente und Gross-/Kleinschreibung gleich, kommt zuerst der Name ohne Akzent, danach entscheidet die Grossschreibung: Helene, helene, Hélène, hélène.
 
 ## Aufbau des Projekts
 
@@ -46,7 +52,7 @@ daten-app/
 ├── main.py              Startpunkt der App
 ├── app/
 │   ├── datenbank.py     Zugriff auf die SQLite-Datenbank
-│   ├── logik.py         Altersberechnung und Eingabeprüfung
+│   ├── logik.py         Altersberechnung, Eingabeprüfung und Namensvergleich
 │   └── gui.py           Oberfläche mit tkinter
 └── tests/
     ├── test_datenbank.py
@@ -75,12 +81,14 @@ da es sich jedes Jahr ändert.
 
 Im Projektordner:
 
-```
-python -m unittest -v
-```
+    python -m unittest -v
 
-Es laufen 14 Tests für die Datenbankfunktionen, die Altersberechnung und die Eingabeprüfung.
+Es laufen 28 Tests für die Datenbankfunktionen, die Altersberechnung und die Eingabeprüfung sowie die Sortierung der Einträge.
 Die Tests verwenden eine eigene, temporäre Datenbank. Die echte `daten.db` bleibt dabei unverändert.
+
+## Bekannte Einschränkungen
+
+- Bei der Sortierung werden nur die Sonderzeichen ä, ö, ü, à, â, ç, é, è, ê, ë, ì, ô, ò und ù berücksichtigt. Andere Zeichen wie ñ, å oder ß werden nach dem z einsortiert.
 
 ## Autor
 
