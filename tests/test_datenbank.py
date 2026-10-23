@@ -71,7 +71,7 @@ class TestDatenbank(unittest.TestCase):
         tatsaechlich = tuple([eintrag[1:3] for eintrag in eintraege])
         erwartet = (("aerni", "Anna"), ("Meier", "Clara"), ("von Gunten", "BEn"), ("von Gunten", "Ben"), ("von Gunten", "ben"))   # Nur Nachnname und Vorname für die Überprüfung
 
-        self.assertNotEqual(tatsaechlich, erwartet)  # Test schlägt fehl, da die Sortierung nicht korrekt ist
+        self.assertEqual(tatsaechlich, erwartet)  # Test schlägt fehl, da die Sortierung nicht korrekt ist
   
 
 if __name__ == "__main__":

@@ -9,8 +9,8 @@ def tabelle_anlegen():
         verbindung.execute("""
             CREATE TABLE IF NOT EXISTS personen(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nachname TEXT NOT NULL,
-                vorname TEXT NOT NULL,
+                nachname TEXT NOT NULL COLLATE NOCASE,
+                vorname TEXT NOT NULL COLLATE NOCASE,
                 geburtsdatum TEXT NOT NULL,
                 geschlecht TEXT NOT NULL CHECK(geschlecht IN ('m', 'w', 'd')),
                 wohnort TEXT NOT NULL
